@@ -49,6 +49,16 @@ public class OpenApiConfig {
                 .build();
     }
 
+    // in OpenApiConfig.java (add another bean)
+    @Bean
+    public org.springdoc.core.models.GroupedOpenApi tenantsGroup() {
+        return org.springdoc.core.models.GroupedOpenApi.builder()
+                .group("tenants")
+                .pathsToMatch("/api/tenants/**")
+                .build();
+    }
+
+
     // You can add more groups later:
     // tenantsGroup -> "/api/tenants/**"
     // roomsGroup -> "/api/rooms/**"
