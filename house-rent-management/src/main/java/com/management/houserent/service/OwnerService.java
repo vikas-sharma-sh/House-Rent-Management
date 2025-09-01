@@ -11,4 +11,6 @@ public interface OwnerService {
     List<OwnerResponseDto> getAllOwners();
     OwnerResponseDto updateOwner(Long id , OwnerRequestDto dto);
     void deleteOwner(Long id);
+
+    OwnerResponseDto getOwnerByEmail(String email);
 }

@@ -11,4 +11,8 @@ public interface RoomService {
     RoomResponseDto unassignTenant(Long roomId);
     List<RoomResponseDto> getRoomsByOwner(Long ownerId);
     List<RoomResponseDto> getAvailableRooms();
+
+    List<RoomResponseDto> getAllRooms();
+
+    List<RoomResponseDto> getRoomsByOwnerEmail(String email);
 }

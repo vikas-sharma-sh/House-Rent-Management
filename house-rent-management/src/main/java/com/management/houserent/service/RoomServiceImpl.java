@@ -93,8 +93,27 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<RoomResponseDto> getRoomsByOwnerEmail(String email) {
+        Owner owner = ownerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with email: " + email));
+
+        return roomRepository.findByOwner_Id(owner.getId())
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<RoomResponseDto> getAvailableRooms() {
         return roomRepository.findByAvailabilityStatus(Room.AvailabilityStatus.AVAILABLE)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RoomResponseDto> getAllRooms() {
+        return roomRepository.findAll()
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());

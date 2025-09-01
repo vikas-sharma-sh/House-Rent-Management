@@ -1,27 +1,13 @@
-//package com.management.houserent.config;
-//
-//import io.swagger.v3.oas.models.OpenAPI;
-//import io.swagger.v3.oas.models.info.Info;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//
-//@Configuration
-//public class OpenApiConfig {
-//    @Bean
-//    public OpenAPI houseRentOpenAPI() {
-//        return new OpenAPI().info(new Info().title("House Rent API").version("v1"));
-//    }
-//}
 package com.management.houserent.config;
 
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.*;
+import io.swagger.v3.oas.models.info.*;
+import io.swagger.v3.oas.models.security.*;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -31,16 +17,21 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("House Rent Management API")
-                        .description("REST API for owners, tenants, rooms, leases, payments and bills")
-                        .version("v1.0.0")
-                        .contact(new Contact().name("Your Team").email("support@example.com"))
-                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0")))
-                .externalDocs(new ExternalDocumentation()
-                        .description("Project README")
-                        .url("https://github.com/your-org/house-rent-management")); // update later
+                        .description("REST API for managing owners, tenants, rooms, leases, and admin tasks")
+                        .version("v2.0.0")
+                        .contact(new Contact().name("HouseRent Team").email("support@example.com"))
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0"))
+                )
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth", List.of("read","write")));
     }
 
-    // Group for Owner endpoints
+    // Group: Owners
     @Bean
     public GroupedOpenApi ownersGroup() {
         return GroupedOpenApi.builder()
@@ -49,26 +40,39 @@ public class OpenApiConfig {
                 .build();
     }
 
-    // in OpenApiConfig.java (add another bean)
+    // Group: Tenants
     @Bean
-    public org.springdoc.core.models.GroupedOpenApi tenantsGroup() {
-        return org.springdoc.core.models.GroupedOpenApi.builder()
+    public GroupedOpenApi tenantsGroup() {
+        return GroupedOpenApi.builder()
                 .group("tenants")
                 .pathsToMatch("/api/tenants/**")
                 .build();
     }
 
+    // Group: Rooms
     @Bean
-    public org.springdoc.core.models.GroupedOpenApi roomsGroup() {
-        return org.springdoc.core.models.GroupedOpenApi.builder()
+    public GroupedOpenApi roomsGroup() {
+        return GroupedOpenApi.builder()
                 .group("rooms")
                 .pathsToMatch("/api/rooms/**")
                 .build();
     }
 
+    // Group: Admin
+    @Bean
+    public GroupedOpenApi adminGroup() {
+        return GroupedOpenApi.builder()
+                .group("admin")
+                .pathsToMatch("/api/admin/**")
+                .build();
+    }
 
-    // You can add more groups later:
-    // tenantsGroup -> "/api/tenants/**"
-    // roomsGroup -> "/api/rooms/**"
+    // Group: Auth (login/register)
+    @Bean
+    public GroupedOpenApi authGroup() {
+        return GroupedOpenApi.builder()
+                .group("auth")
+                .pathsToMatch("/api/auth/**")
+                .build();
+    }
 }
-

@@ -75,6 +75,19 @@ public class OwnerServiceImpl implements  OwnerService {
         ownerRepository.deleteById(id);
     }
 
+    @Override
+    public OwnerResponseDto getOwnerByEmail(String email) {
+        Owner owner = ownerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with email " + email));
+
+        return mapToDto(owner);
+    }
+
+
+
+
+
+
     //---mapper---
     private OwnerResponseDto mapToDto(Owner owner) {
 
