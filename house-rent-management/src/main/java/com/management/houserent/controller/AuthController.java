@@ -4,6 +4,7 @@ package com.management.houserent.controller;
 import com.management.houserent.dto.AuthRequest;
 import com.management.houserent.dto.AuthResponse;
 import com.management.houserent.dto.RegisterRequest;
+import com.management.houserent.dto.auth.LoginRequest;
 import com.management.houserent.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest req){
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req){
         return ResponseEntity.ok(auth.login(req));
     }
 }

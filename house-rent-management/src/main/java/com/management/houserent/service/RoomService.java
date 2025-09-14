@@ -6,13 +6,11 @@ import com.management.houserent.dto.RoomResponseDto;
 import java.util.List;
 
 public interface RoomService {
-    RoomResponseDto createRoom(RoomRequestDto request);
-    RoomResponseDto assignTenant(Long roomId,Long tenantId);
-    RoomResponseDto unassignTenant(Long roomId);
-    List<RoomResponseDto> getRoomsByOwner(Long ownerId);
-    List<RoomResponseDto> getAvailableRooms();
-
-    List<RoomResponseDto> getAllRooms();
-
     List<RoomResponseDto> getRoomsByOwnerEmail(String email);
+    RoomResponseDto createRoom(String ownerEmail, RoomRequestDto req);
+    RoomResponseDto updateRoomOwned(String ownerEmail, Long roomId, RoomRequestDto req);
+    RoomResponseDto markAvailabilityOwned(String ownerEmail, Long roomId, boolean available);
+    List<RoomResponseDto> getAvailableRoomsPublic();
+    RoomResponseDto getRoomPublicById(Long id);
+    List<RoomResponseDto> getAvailableRooms();
 }

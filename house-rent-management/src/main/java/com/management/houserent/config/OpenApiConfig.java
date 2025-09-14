@@ -75,4 +75,39 @@ public class OpenApiConfig {
                 .pathsToMatch("/api/auth/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi ApplicationGroup() {
+        return GroupedOpenApi.builder()
+                .group("applications")
+                .pathsToMatch("/api/applications/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi PaymentGroup(){
+        return GroupedOpenApi.builder()
+                .group("payments")
+                .pathsToMatch("/api/payments/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi LeaseGroup(){
+        return GroupedOpenApi.builder()
+                .group("leases")
+                .pathsToMatch("/api/leases/**")
+                .build();
+    }
+
+    @Bean
+    public  GroupedOpenApi BillGroup(){
+        return GroupedOpenApi.builder()
+                .group("bills")
+                .pathsToMatch("/api/bills/**")
+                .build();
+    }
+
+
+
 }

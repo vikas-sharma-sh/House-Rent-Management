@@ -10,19 +10,27 @@ public class TenantRequestDto {
     @Size(max = 100, message = "Name must be less than 100 characters")
     private String name;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid Email Format")
-    private String email;
+
 
     @Size(max = 20, message = "Phone must be less than 20 characters")
     private String phone;
 
+    @NotBlank @Email private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail( String email) {
+        this.email = email;
+    }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+
+
 }

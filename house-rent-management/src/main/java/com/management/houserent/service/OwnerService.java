@@ -6,11 +6,7 @@ import com.management.houserent.dto.OwnerResponseDto;
 import java.util.List;
 
 public interface OwnerService {
-    OwnerResponseDto createOwner(OwnerRequestDto dto);
-    OwnerResponseDto getOwnerById(Long id) ;
-    List<OwnerResponseDto> getAllOwners();
-    OwnerResponseDto updateOwner(Long id , OwnerRequestDto dto);
-    void deleteOwner(Long id);
 
+    OwnerResponseDto updateOwner(Long id, OwnerRequestDto request);
     OwnerResponseDto getOwnerByEmail(String email);
 }

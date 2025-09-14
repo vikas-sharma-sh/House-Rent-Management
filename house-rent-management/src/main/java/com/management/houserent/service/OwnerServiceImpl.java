@@ -1,111 +1,59 @@
 package com.management.houserent.service;
 
-
 import com.management.houserent.dto.OwnerRequestDto;
 import com.management.houserent.dto.OwnerResponseDto;
 import com.management.houserent.exception.DuplicateResourceException;
 import com.management.houserent.exception.ResourceNotFoundException;
 import com.management.houserent.model.Owner;
 import com.management.houserent.repository.OwnerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class OwnerServiceImpl implements  OwnerService {
+public class OwnerServiceImpl implements OwnerService {
 
-    @Autowired
-    private OwnerRepository ownerRepository ;
+    private final OwnerRepository ownerRepo;
 
-    @Override
-    public OwnerResponseDto createOwner(OwnerRequestDto dto) {
-        if(ownerRepository.existsByEmail(dto.getEmail())){
-            throw new DuplicateResourceException("Owner with email already exists!");
-        }
-        Owner owner = new Owner();
-        owner.setName(dto.getName());
-        owner.setEmail(dto.getEmail());
-        owner.setPhone(dto.getPhone());
 
-        Owner saved = ownerRepository.save(owner);
-
-        return  mapToDto(saved);
-
-    }
-
-    @Override
-    public OwnerResponseDto getOwnerById(Long id) {
-         Owner owner = ownerRepository.findById(id)
-                 .orElseThrow(()->new ResourceNotFoundException("Owner not found with id "+ id));
-         return  mapToDto(owner);
-    }
-
-    @Override
-    public List<OwnerResponseDto> getAllOwners() {
-        return ownerRepository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public OwnerResponseDto updateOwner(Long id , OwnerRequestDto dto) {
-
-        Owner owner = ownerRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Owner not found with id " + id));
-
-        owner.setName(dto.getName());
-        owner.setEmail(dto.getEmail());
-        owner.setPhone(dto.getPhone());
-
-        Owner updated = ownerRepository.save(owner);
-
-        return mapToDto(updated);
-    }
+    public OwnerServiceImpl(OwnerRepository ownerRepo) { this.ownerRepo = ownerRepo; }
 
 
     @Override
-    public void deleteOwner(Long id) {
-        if(!ownerRepository.existsById(id)){
-            throw  new ResourceNotFoundException("Owner not found with id " + id);
-        };
-
-        ownerRepository.deleteById(id);
+    @Transactional
+    public OwnerResponseDto updateOwner(Long id, OwnerRequestDto request) {
+        Owner o = ownerRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found: " + id));
+        o.setName(request.getName());
+        o.setPhone(request.getPhone());
+        // do not allow email change easily; if allowed, ensure duplicates are checked
+        Owner up = ownerRepo.save(o);
+        return mapToDto(up);
     }
+
 
     @Override
     public OwnerResponseDto getOwnerByEmail(String email) {
-        Owner owner = ownerRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with email " + email));
-
-        return mapToDto(owner);
+        Owner o = ownerRepo.
+                findByEmail(email.toLowerCase().trim()).
+                orElseThrow(() -> new ResourceNotFoundException("Owner not found: " + email));
+        return mapToDto(o);
     }
 
-
-
-
-
-
-    //---mapper---
-    private OwnerResponseDto mapToDto(Owner owner) {
-
+    private OwnerResponseDto mapToDto(Owner o) {
         OwnerResponseDto dto = new OwnerResponseDto();
-        dto.setId(owner.getId());
-        dto.setName(owner.getName());
-        dto.setEmail(owner.getEmail());
-        dto.setPhone(owner.getPhone());
-        dto.setCreatedAt(owner.getCreatedAt());
-        dto.setUpdatedAt(owner.getUpdatedAt());
-
-        return  dto;
-
+        dto.setId(o.getId());
+        dto.setName(o.getName());
+        dto.setEmail(o.getEmail());
+        dto.setPhone(o.getPhone());
+        dto.setCreatedAt(o.getCreatedAt());
+        dto.setUpdatedAt(o.getUpdatedAt());
+        return dto;
     }
 
-
-
-
-
-
+    /*
+     Room.AvailabilityStatus s = Room.AvailabilityStatus.valueOf(status.trim().toUpperCase());
+            room.setAvailabilityStatus(s);
+            rooms.save(room);
+     */
 }

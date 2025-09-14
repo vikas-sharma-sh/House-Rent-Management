@@ -6,8 +6,8 @@ import com.management.houserent.exception.DuplicateResourceException;
 import com.management.houserent.exception.ResourceNotFoundException;
 import com.management.houserent.model.Tenant;
 import com.management.houserent.repository.TenantRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,67 +15,40 @@ import java.util.stream.Collectors;
 @Service
 public class TenantServiceImpl implements TenantService {
 
-    @Autowired
-    private TenantRepository tenantRepository;
+    private final TenantRepository tenantRepo;
+    public TenantServiceImpl(TenantRepository tenantRepo) { this.tenantRepo = tenantRepo; }
+
+
+
+
 
     @Override
-    public TenantResponseDto createTenant(TenantRequestDto dto) {
-        if (tenantRepository.existsByEmail(dto.getEmail())) {
-            throw new DuplicateResourceException("Tenant with email already exists!");
-        }
-        Tenant tenant = new Tenant();
-        tenant.setName(dto.getName());
-        tenant.setEmail(dto.getEmail());
-        tenant.setPhone(dto.getPhone());
-
-        Tenant saved = tenantRepository.save(tenant);
-        return mapToDto(saved);
-    }
-
-    @Override
-    public TenantResponseDto getTenantById(Long id) {
-        Tenant tenant = tenantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found with id " + id));
-        return mapToDto(tenant);
-    }
-
-    @Override
-    public List<TenantResponseDto> getAllTenants() {
-        return tenantRepository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
+    @Transactional
     public TenantResponseDto updateTenant(Long id, TenantRequestDto dto) {
-        Tenant tenant = tenantRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found with id " + id));
-
-        tenant.setName(dto.getName());
-        tenant.setEmail(dto.getEmail());
-        tenant.setPhone(dto.getPhone());
-
-        Tenant updated = tenantRepository.save(tenant);
+        Tenant t = tenantRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tenant not found: " + id));
+        t.setName(dto.getName());
+        t.setPhone(dto.getPhone());
+        Tenant updated = tenantRepo.save(t);
         return mapToDto(updated);
     }
 
+
+
     @Override
-    public void deleteTenant(Long id) {
-        if (!tenantRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Tenant not found with id " + id);
-        }
-        tenantRepository.deleteById(id);
+    public TenantResponseDto getTenantByEmail(String email) {
+        Tenant t = tenantRepo.
+                findByEmail(email.toLowerCase().trim()).orElseThrow(() -> new ResourceNotFoundException("Tenant not found: " + email));
+        return mapToDto(t);
     }
 
-    private TenantResponseDto mapToDto(Tenant tenant) {
+    private TenantResponseDto mapToDto(Tenant t) {
         TenantResponseDto dto = new TenantResponseDto();
-        dto.setId(tenant.getId());
-        dto.setName(tenant.getName());
-        dto.setEmail(tenant.getEmail());
-        dto.setPhone(tenant.getPhone());
-        dto.setCreatedAt(tenant.getCreatedAt());
-        dto.setUpdatedAt(tenant.getUpdatedAt());
+        dto.setId(t.getId());
+        dto.setName(t.getName());
+        dto.setEmail(t.getEmail());
+        dto.setPhone(t.getPhone());
+        dto.setCreatedAt(t.getCreatedAt());
+        dto.setUpdatedAt(t.getUpdatedAt());
         return dto;
     }
 }

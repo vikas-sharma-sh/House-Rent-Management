@@ -1,13 +1,44 @@
 package com.management.houserent.dto;
 
+import com.management.houserent.model.Room;
+
+import java.time.LocalDateTime;
+
 public class RoomResponseDto {
     private Long id ;
     private String roomNumber ;
     private String address ;
     private Double rentAmount ;
-    private String availabilityStatus ;
+    private Room.AvailabilityStatus availabilityStatus ;
     private Long ownerId;
     private Long tenantId ;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Double depositAmount;
+
+    public Double getDepositAmount() {
+        return depositAmount;
+    }
+
+    public void setDepositAmount(Double depositAmount) {
+        this.depositAmount = depositAmount;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     public Long getId() {
         return id;
@@ -33,12 +64,11 @@ public class RoomResponseDto {
         this.address = address;
     }
 
-    public String getAvailabilityStatus() {
+    public Room.AvailabilityStatus getAvailabilityStatus() {
         return availabilityStatus;
     }
-
-    public void setAvailabilityStatus(String availabilityStatus) {
-        this.availabilityStatus = availabilityStatus;
+    public void setAvailabilityStatus(Room.AvailabilityStatus s) {
+        this.availabilityStatus = s ;
     }
 
     public Double getRentAmount() {
