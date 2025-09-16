@@ -4,6 +4,7 @@ import com.management.houserent.dto.PaymentRequestDto;
 import com.management.houserent.dto.PaymentResponseDto;
 
 import com.management.houserent.exception.ResourceNotFoundException;
+import com.management.houserent.listener.PaymentSuccessListener;
 import com.management.houserent.model.*;
 import com.management.houserent.repository.*;
 import com.management.houserent.util.RazorpaySignatureUtil;
@@ -26,7 +27,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final LeaseRepository leaseRepo;
     private final TenantRepository tenantRepo;
     private final RoomRepository roomRepo;
-    private final ApplicationEventPublisher eventPublisher;
+    private final PaymentSuccessListener paymentSuccessListener;
+
 
     @Value("${razorpay.key-id}")
     private String razorpayKeyId;
@@ -41,12 +43,12 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentServiceImpl(PaymentRepository paymentRepo,
                               LeaseRepository leaseRepo,
                               TenantRepository tenantRepo,
-                              RoomRepository roomRepo, ApplicationEventPublisher eventPublisher) {
+                              RoomRepository roomRepo, PaymentSuccessListener paymentSuccessListener) {
         this.paymentRepo = paymentRepo;
         this.leaseRepo = leaseRepo;
         this.tenantRepo = tenantRepo;
         this.roomRepo = roomRepo;
-        this.eventPublisher = eventPublisher;
+        this.paymentSuccessListener = paymentSuccessListener;
     }
 
     @Override
@@ -124,6 +126,9 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
         payment.setUpdatedAt(LocalDateTime.now());
         paymentRepo.save(payment);
+        // Send receipt email
+        paymentSuccessListener.sendReceiptEmail(payment);
+
 
         // Activate lease if deposit
         Lease lease = payment.getLease();
@@ -171,6 +176,9 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setRazorpayPaymentId(rpPaymentId);
                 payment.setUpdatedAt(LocalDateTime.now());
                 paymentRepo.save(payment);
+                // Send receipt email
+                paymentSuccessListener.sendReceiptEmail(payment);
+
 
                 Lease lease = payment.getLease();
                 if (payment.getPaymentType() == PaymentType.DEPOSIT && lease.getStatus() == LeaseStatus.PENDING) {
